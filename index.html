@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Твой старт | Навигатор по СПО</title>
     
-    <!-- Подключение шрифтов -->
+    <!-- Подключение шрифтов (с display=swap для быстрой отрисовки текста резервным шрифтом) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Onest:wght@400;500;700&display=swap" rel="stylesheet">
@@ -22,8 +22,9 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Onest', 'sans-serif'],
-                        heading: ['Montserrat', 'sans-serif'],
+                        // Расширенный список системных шрифтов для fallback
+                        sans: ['Onest', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                        heading: ['Montserrat', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
                     },
                     colors: {
                         dark: '#0a0a0f',
@@ -44,6 +45,8 @@
             background-color: #0a0a0f;
             color: #e2e8f0;
             overflow-x: hidden;
+            /* Увеличен отступ снизу, чтобы контент не прятался за новым нижним меню */
+            padding-bottom: 6rem; 
         }
 
         /* 1. Прогресс-бар наверху */
@@ -104,7 +107,7 @@
         }
         
         .accordion-item.active .accordion-content {
-            max-height: 900px;
+            max-height: 1200px;
             padding-bottom: 1.5rem;
         }
         
@@ -113,19 +116,18 @@
             color: #00f0ff;
         }
         
-        /* Стили плавающей навигации */
-        .nav-item.active {
-            color: #00f0ff;
-            background: rgba(0, 240, 255, 0.1);
-        }
-        
-        /* Скрытие скроллбара для слайдеров и меню */
+        /* Скрытие скроллбара для слайдеров */
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
         .hide-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
+        }
+
+        /* Стили для точек слайдера */
+        .slider-dot {
+            transition: all 0.3s ease;
         }
 
         /* 4. Flip-карточки словаря */
@@ -153,9 +155,25 @@
             background: rgba(176, 38, 255, 0.1); border: 1px solid rgba(176, 38, 255, 0.3);
             transform: rotateY(180deg);
         }
+
+        /* 5. Навигация в стиле мобильного приложения */
+        .app-bottom-nav {
+            /* env(safe-area-inset-bottom) защищает меню от перекрытия системной полоской на iPhone/Android */
+            padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
+        }
+        .nav-item {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-item.active {
+            color: #00f0ff;
+        }
+        .nav-item.active i {
+            filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.8));
+        }
     </style>
 </head>
-<body class="antialiased pb-24 relative selection:bg-neon-purple selection:text-white">
+<body class="antialiased relative selection:bg-neon-purple selection:text-white">
 
     <!-- Прогресс бар чтения -->
     <div class="progress-container">
@@ -166,31 +184,31 @@
     <div class="glow-bg glow-1"></div>
     <div class="glow-bg glow-2"></div>
 
-    <!-- Плавающая навигация (Mobile & Desktop) -->
-    <nav class="fixed bottom-4 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 bg-card/80 backdrop-blur-md border border-white/10 rounded-2xl z-50 p-2 flex justify-between md:justify-center md:gap-2 shadow-[0_0_20px_rgba(0,0,0,0.5)] overflow-x-auto hide-scrollbar">
-        <a href="#hero" class="nav-item flex flex-col items-center justify-center min-w-[3.5rem] flex-1 py-2 rounded-xl text-[10px] md:text-xs font-medium text-gray-400 transition-all hover:text-neon-cyan shrink-0">
-            <i data-lucide="zap" class="w-5 h-5 mb-1"></i>
-            Старт
+    <!-- НАВИГАЦИЯ (Стиль Native App Bar - всегда внизу, не пропадает, вмещает всё) -->
+    <nav class="fixed bottom-0 left-0 right-0 md:max-w-md md:mx-auto bg-card/95 backdrop-blur-2xl border-t border-white/10 z-[100] md:rounded-t-3xl app-bottom-nav pt-2 px-1 flex justify-between items-end shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+        <a href="#hero" class="nav-item flex flex-col items-center justify-center flex-1 py-1 gap-1 text-gray-500 hover:text-neon-cyan">
+            <i data-lucide="zap" class="w-[22px] h-[22px]"></i>
+            <span class="text-[9px] sm:text-[10px] font-medium tracking-tight">Старт</span>
         </a>
-        <a href="#rights" class="nav-item flex flex-col items-center justify-center min-w-[3.5rem] flex-1 py-2 rounded-xl text-[10px] md:text-xs font-medium text-gray-400 transition-all hover:text-neon-cyan shrink-0">
-            <i data-lucide="shield-check" class="w-5 h-5 mb-1"></i>
-            Права
+        <a href="#rights" class="nav-item flex flex-col items-center justify-center flex-1 py-1 gap-1 text-gray-500 hover:text-neon-cyan">
+            <i data-lucide="shield-check" class="w-[22px] h-[22px]"></i>
+            <span class="text-[9px] sm:text-[10px] font-medium tracking-tight">Права</span>
         </a>
-        <a href="#steps" class="nav-item flex flex-col items-center justify-center min-w-[3.5rem] flex-1 py-2 rounded-xl text-[10px] md:text-xs font-medium text-gray-400 transition-all hover:text-neon-cyan shrink-0">
-            <i data-lucide="map" class="w-5 h-5 mb-1"></i>
-            Шаги
+        <a href="#steps" class="nav-item flex flex-col items-center justify-center flex-1 py-1 gap-1 text-gray-500 hover:text-neon-cyan">
+            <i data-lucide="map" class="w-[22px] h-[22px]"></i>
+            <span class="text-[9px] sm:text-[10px] font-medium tracking-tight">Шаги</span>
         </a>
-        <a href="#dictionary" class="nav-item flex flex-col items-center justify-center min-w-[3.5rem] flex-1 py-2 rounded-xl text-[10px] md:text-xs font-medium text-gray-400 transition-all hover:text-neon-cyan shrink-0">
-            <i data-lucide="book-open" class="w-5 h-5 mb-1"></i>
-            Словарь
+        <a href="#dictionary" class="nav-item flex flex-col items-center justify-center flex-1 py-1 gap-1 text-gray-500 hover:text-neon-cyan">
+            <i data-lucide="book-open" class="w-[22px] h-[22px]"></i>
+            <span class="text-[9px] sm:text-[10px] font-medium tracking-tight">Словарь</span>
         </a>
-        <a href="#faq" class="nav-item flex flex-col items-center justify-center min-w-[3.5rem] flex-1 py-2 rounded-xl text-[10px] md:text-xs font-medium text-gray-400 transition-all hover:text-neon-cyan shrink-0">
-            <i data-lucide="message-circle" class="w-5 h-5 mb-1"></i>
-            Вопросы
+        <a href="#faq" class="nav-item flex flex-col items-center justify-center flex-1 py-1 gap-1 text-gray-500 hover:text-neon-cyan">
+            <i data-lucide="message-circle" class="w-[22px] h-[22px]"></i>
+            <span class="text-[9px] sm:text-[10px] font-medium tracking-tight">Вопросы</span>
         </a>
-        <a href="#help" class="nav-item flex flex-col items-center justify-center min-w-[3.5rem] flex-1 py-2 rounded-xl text-[10px] md:text-xs font-medium text-gray-400 transition-all hover:text-neon-cyan shrink-0">
-            <i data-lucide="life-buoy" class="w-5 h-5 mb-1"></i>
-            Помощь
+        <a href="#help" class="nav-item flex flex-col items-center justify-center flex-1 py-1 gap-1 text-gray-500 hover:text-neon-cyan">
+            <i data-lucide="life-buoy" class="w-[22px] h-[22px]"></i>
+            <span class="text-[9px] sm:text-[10px] font-medium tracking-tight">Помощь</span>
         </a>
     </nav>
 
@@ -206,11 +224,11 @@
                     Уйти после 9-го — <br>
                     <span class="bg-clip-text text-transparent bg-gradient-to-r from-neon-cyan to-neon-purple neon-text">это нормально.</span>
                 </h1>
-                <p class="text-xl md:text-2xl font-medium text-gray-300 mb-6">
+                <p class="text-xl md:text-2xl font-medium text-gray-200 mb-6">
                     Колледж — это твой старт, а не запасной аэродром.
                 </p>
                 
-                <div class="text-left text-gray-400 space-y-4 max-w-2xl mx-auto leading-relaxed bg-card/50 p-6 rounded-2xl border border-white/5">
+                <div class="text-left text-gray-300 space-y-4 max-w-2xl mx-auto leading-relaxed bg-card/50 p-6 rounded-2xl border border-white/5">
                     <p>Вокруг системы среднего профессионального образования (СПО) существует устойчивый стереотип: многие ошибочно полагают, что в колледж уходят только те, кто не справляется со школьной программой. На самом деле, современный колледж — это отличная площадка для тех, кто готов взять ответственность за свое будущее в собственные руки.</p>
                     <p>Решение продолжить обучение в СПО — это не признак слабости или неудачи, а осознанный, взрослый шаг навстречу самостоятельной жизни. Это возможность выйти из привычной школьной системы, которая подходит далеко не всем, и начать процесс своего профессионального и личностного становления.</p>
                 </div>
@@ -219,40 +237,36 @@
             <!-- Карточки преимуществ -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
                 
-                <!-- Карточка 1 -->
                 <div class="bg-card border border-white/10 rounded-2xl p-6 relative overflow-hidden group hover:neon-border transition-all duration-300 hover:-translate-y-1 scroll-reveal">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-neon-purple/20 to-transparent flex items-center justify-center mb-4 text-neon-purple group-hover:text-neon-cyan transition-colors">
                         <i data-lucide="users" class="w-6 h-6"></i>
                     </div>
                     <h3 class="font-heading text-lg font-bold text-white mb-2">Отношение как к взрослому</h3>
-                    <p class="text-sm text-gray-400">Школьная система строгого контроля остается позади. Переступая порог колледжа, вы получаете статус студента. Образовательный процесс здесь строится на совершенно иных принципах — это партнерство, уважение к личности и диалог на равных. Такое отношение помогает быстрее адаптироваться и почувствовать свою значимость в обществе.</p>
+                    <p class="text-sm text-gray-300 leading-relaxed">Школьная система строгого контроля остается позади. Переступая порог колледжа, вы получаете статус студента. Образовательный процесс здесь строится на совершенно иных принципах — это партнерство, уважение к личности и диалог на равных. Такое отношение помогает быстрее адаптироваться и почувствовать свою значимость в обществе.</p>
                 </div>
 
-                <!-- Карточка 2 -->
                 <div class="bg-card border border-white/10 rounded-2xl p-6 relative overflow-hidden group hover:neon-border transition-all duration-300 hover:-translate-y-1 scroll-reveal" style="transition-delay: 100ms;">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-neon-cyan/20 to-transparent flex items-center justify-center mb-4 text-neon-cyan group-hover:text-neon-purple transition-colors">
                         <i data-lucide="wallet" class="w-6 h-6"></i>
                     </div>
                     <h3 class="font-heading text-lg font-bold text-white mb-2">Свои деньги и независимость</h3>
-                    <p class="text-sm text-gray-400">Программы колледжей максимально ориентированы на практику. Пока сверстники продолжают изучать общую теорию за школьной партой, вы осваиваете реальную профессию и получаете прикладные навыки. Это позволяет значительно раньше выйти на рынок труда, начать самостоятельно себя обеспечивать и обрести твердую почву под ногами.</p>
+                    <p class="text-sm text-gray-300 leading-relaxed">Программы колледжей максимально ориентированы на практику. Пока сверстники продолжают изучать общую теорию за школьной партой, вы осваиваете реальную профессию и получаете прикладные навыки. Это позволяет значительно раньше выйти на рынок труда, начать самостоятельно себя обеспечивать и обрести твердую почву под ногами.</p>
                 </div>
 
-                <!-- Карточка 3 -->
                 <div class="bg-card border border-white/10 rounded-2xl p-6 relative overflow-hidden group hover:neon-border transition-all duration-300 hover:-translate-y-1 scroll-reveal" style="transition-delay: 200ms;">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/20 to-transparent flex items-center justify-center mb-4 text-green-400 group-hover:text-neon-cyan transition-colors">
                         <i data-lucide="check-circle" class="w-6 h-6"></i>
                     </div>
                     <h3 class="font-heading text-lg font-bold text-white mb-2">Жизнь без ЕГЭ</h3>
-                    <p class="text-sm text-gray-400">Зачисление в большинство учреждений СПО проходит на основе среднего балла аттестата. Выбирая этот путь, вы оберегаете себя от изнурительной подготовки к Единому государственному экзамену (ЕГЭ) и колоссального стресса. Ваши результаты зависят от планомерной работы во время учебы, а не от уровня тревоги в один конкретный экзаменационный день.</p>
+                    <p class="text-sm text-gray-300 leading-relaxed">Зачисление в большинство учреждений СПО проходит на основе среднего балла аттестата. Выбирая этот путь, вы оберегаете себя от изнурительной подготовки к Единому государственному экзамену (ЕГЭ) и колоссального стресса. Ваши результаты зависят от планомерной работы во время учебы, а не от уровня тревоги в один конкретный экзаменационный день.</p>
                 </div>
 
-                <!-- Карточка 4 -->
                 <div class="bg-card border border-white/10 rounded-2xl p-6 relative overflow-hidden group hover:neon-border transition-all duration-300 hover:-translate-y-1 scroll-reveal" style="transition-delay: 300ms;">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500/20 to-transparent flex items-center justify-center mb-4 text-orange-400 group-hover:text-neon-purple transition-colors">
                         <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                     </div>
                     <h3 class="font-heading text-lg font-bold text-white mb-2">Вуз никуда не денется</h3>
-                    <p class="text-sm text-gray-400">Диплом колледжа ни в коем случае не закрывает перед вами двери университетов. Наоборот, выпускники СПО имеют право поступать в высшие учебные заведения по внутренним вступительным экзаменам вуза, минуя ЕГЭ. Важно понимать: чаще всего это будут профильные экзамены по твоей будущей специальности. Кроме того, профильное образование часто позволяет учиться в институте по ускоренным программам, уже имея за плечами надежную «подушку безопасности» в виде готовой профессии.</p>
+                    <p class="text-sm text-gray-300 leading-relaxed">Диплом колледжа ни в коем случае не закрывает перед вами двери университетов. Наоборот, выпускники СПО имеют право поступать в высшие учебные заведения по внутренним вступительным экзаменам вуза, минуя ЕГЭ. Важно понимать: чаще всего это будут профильные экзамены по твоей будущей специальности. Кроме того, профильное образование часто позволяет учиться в институте по ускоренным программам, уже имея за плечами надежную «подушку безопасности» в виде готовой профессии.</p>
                 </div>
             </div>
         </section>
@@ -263,11 +277,11 @@
                 <div class="w-10 h-10 rounded-full bg-neon-cyan/20 flex items-center justify-center text-neon-cyan">
                     <i data-lucide="shield" class="w-5 h-5"></i>
                 </div>
-                <h2 class="font-heading text-2xl md:text-3xl font-bold text-white">Твои права и гарантии</h2>
+                <h2 class="font-heading text-2xl md:text-3xl font-bold text-white">Твои права и государственные гарантии</h2>
             </div>
             
-            <p class="text-gray-400 mb-8 leading-relaxed bg-card p-5 rounded-2xl border-l-4 border-neon-cyan">
-                Начиная самостоятельную жизнь, важно знать, что ты не один. Государство предоставляет целый ряд особых прав и мер социальной поддержки для детей-сирот и детей, оставшихся без попечения родителей. Знать свои права — значит чувствовать себя защищенным. Эти гарантии созданы специально для того, чтобы ты мог спокойно учиться, получить профессию и твердо встать на ноги.
+            <p class="text-gray-300 mb-8 leading-relaxed bg-card p-5 rounded-2xl border-l-4 border-neon-cyan">
+                Начиная самостоятельную жизнь, важно знать, что ты не один. Государство предоставляет целый ряд особых прав и мер социальной поддержки: будь ты ребенок-сирота, подросток из малоимущей семьи или гражданин другой страны. Знать свои права — значит чувствовать себя защищенным и уверенно планировать свое будущее. Эти гарантии созданы специально для того, чтобы ты мог спокойно учиться, получить профессию и твердо встать на ноги.
             </p>
 
             <div class="space-y-4 mb-10">
@@ -277,8 +291,8 @@
                         <i data-lucide="award" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-white mb-1">Преимущественное право зачисления</h3>
-                        <p class="text-sm text-gray-400">В отличие от вузов, поступление в колледж проходит по конкурсу аттестатов. Твой статус дает тебе <strong>преимущественное право</strong>. Что это значит на практике? Если у тебя и у другого абитуриента без льгот будет <em>абсолютно одинаковый</em> средний балл аттестата, и вы оба будете претендовать на последнее бюджетное место, закон обяжет приемную комиссию зачислить именно тебя. Это отличная подстраховка, но помни: преимущество работает только при равных баллах, поэтому за оценки в аттестате нужно побороться!</p>
+                        <h3 class="font-bold text-white mb-1">Преимущественное право зачисления <span class="text-neon-purple/70 text-sm font-normal">(для детей-сирот)</span></h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">В отличие от вузов, поступление в колледж проходит по конкурсу аттестатов. Если у тебя есть статус сироты, закон дает тебе <strong>преимущественное право</strong>. Что это значит на практике? Если у тебя и у другого абитуриента без льгот будет <em>абсолютно одинаковый</em> средний балл аттестата, и вы оба будете претендовать на последнее бюджетное место, закон обяжет приемную комиссию зачислить именно тебя. Это отличная подстраховка, но помни: преимущество работает только при равных баллах, поэтому за оценки в аттестате нужно побороться!</p>
                     </div>
                 </div>
 
@@ -287,8 +301,8 @@
                         <i data-lucide="home" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-white mb-1">Полное государственное обеспечение</h3>
-                        <p class="text-sm text-gray-400">На весь период очного обучения колледж берет на себя обеспечение твоих базовых нужд. Тебе гарантировано бесплатное и первоочередное предоставление места в студенческом общежитии. <strong>НО есть нюанс:</strong> это работает, только если у колледжа в принципе есть общежитие. Обязательно проверяй это на сайте заведения до подачи заявления! Кроме того, ты будешь обеспечен бесплатным питанием (или ежемесячной денежной компенсацией на него), а также средствами на покупку одежды, обуви и мягкого инвентаря.</p>
+                        <h3 class="font-bold text-white mb-1">Полное государственное обеспечение <span class="text-neon-cyan/70 text-sm font-normal">(для детей-сирот)</span></h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">Если ты относишься к категории детей-сирот. На весь период очного обучения колледж берет на себя обеспечение твоих базовых нужд. Тебе гарантировано бесплатное и первоочередное предоставление места в студенческом общежитии. <strong>НО есть нюанс:</strong> это работает, только если у колледжа в принципе есть общежитие. Обязательно проверяй это на сайте заведения до подачи заявления! Кроме того, ты будешь обеспечен бесплатным питанием (или ежемесячной денежной компенсацией на него), а также средствами на покупку одежды, обуви и мягкого инвентаря.</p>
                     </div>
                 </div>
 
@@ -298,7 +312,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-white mb-1">Финансовая поддержка и стипендии</h3>
-                        <p class="text-sm text-gray-400">Обучаясь на бюджете, ты будешь ежемесячно получать государственную социальную стипендию, которая выплачивается гарантированно, независимо от твоих оценок. Также раз в год выплачивается специальное пособие на покупку учебной литературы и письменных принадлежностей. А если ты будешь закрывать сессии на «хорошо» и «отлично», к социальной стипендии добавится еще и академическая.</p>
+                        <p class="text-sm text-gray-300 leading-relaxed">Обучаясь на бюджете, ты будешь ежемесячно получать государственную социальную стипендию, которая выплачивается гарантированно, независимо от твоих оценок. Также раз в год выплачивается специальное пособие на покупку учебной литературы и письменных принадлежностей. А если ты будешь закрывать сессии на «хорошо» и «отлично», к социальной стипендии добавится еще и академическая. Если твоя семья официально признана малоимущей, ты можешь получить помощь. При поступлении на бюджет ты имеешь право оформить государственную социальную стипендию. Для этого нужно получить справку в органах соцзащиты — да, это лишние бумажки, но она того стоит. Кроме того, в большинстве колледжей студенты из малоимущих семей имеют право на бесплатное горячее питание и могут раз в год писать заявление на оказание единовременной материальной помощи.</p>
                     </div>
                 </div>
 
@@ -307,8 +321,18 @@
                         <i data-lucide="bus" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-white mb-1">Бесплатный проезд</h3>
-                        <p class="text-sm text-gray-400">Учеба в колледже требует мобильности. Как студент, относящийся к льготной категории, ты имеешь право на бесплатный проезд в городском общественном транспорте, а также можешь раз в год бесплатно съездить к месту жительства и обратно.</p>
+                        <h3 class="font-bold text-white mb-1">Бесплатный проезд <span class="text-orange-400/70 text-sm font-normal">(для детей-сирот)</span></h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">Учеба в колледже требует мобильности. Как студент, относящийся к льготной категории, ты имеешь право на бесплатный проезд в городском общественном транспорте.</p>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-card to-transparent border border-white/10 rounded-2xl p-5 flex gap-4 items-start scroll-reveal">
+                    <div class="mt-1 text-blue-400 shrink-0">
+                        <i data-lucide="globe" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white mb-1">Если ты гражданин другой страны</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">Важно знать: законодательство РФ гарантирует иностранным гражданам равные права на получение бесплатного среднего профессионального образования. Если ты находишься на территории России легально, ты можешь поступать на бюджетные места наравне с гражданами РФ! Твой иностранный аттестат действителен, просто к нему потребуются дополнительные документы.</p>
                     </div>
                 </div>
 
@@ -324,7 +348,7 @@
                 <h2 class="font-heading text-2xl md:text-3xl font-bold text-white">Пошаговый алгоритм: от выбора колледжа до зачисления</h2>
             </div>
 
-            <p class="text-gray-400 mb-8 leading-relaxed bg-card/50 p-5 rounded-2xl border-l-4 border-neon-purple">
+            <p class="text-gray-300 mb-8 leading-relaxed bg-card/50 p-5 rounded-2xl border-l-4 border-neon-purple">
                 Поступление в колледж — это процесс, который требует не нервов, а простой внимательности. Главное здесь — соблюдать сроки и заранее собрать нужные справки. Мы подготовили для тебя четкий чек-лист на приемную кампанию 2026 года. Двигайся по шагам, и всё обязательно получится!
             </p>
 
@@ -339,15 +363,15 @@
                         </span>
                         <i data-lucide="chevron-down" class="accordion-icon w-5 h-5 text-gray-400 transition-transform duration-300"></i>
                     </button>
-                    <div class="accordion-content px-6 text-gray-400 text-sm md:text-base leading-relaxed">
+                    <div class="accordion-content px-6 text-gray-300 text-sm md:text-base leading-relaxed">
                         <div class="pt-2 border-t border-white/5">
                             <p class="mb-3"><span class="text-neon-cyan">Сроки: 20 июня — 15 августа 2026 г.</span></p>
                             <p class="mb-4">Приемная кампания традиционно стартует 20 июня. Если твоя специальность не требует дополнительных творческих или физических испытаний (как у дизайнеров или пожарных), дедлайн подачи документов — <strong class="text-white">15 августа</strong>.</p>
                             <p class="mb-2">Способов подачи несколько:</p>
-                            <ul class="list-disc pl-5 space-y-2 text-white/70 mb-4">
-                                <li>Онлайн через портал «Госуслуги».</li>
+                            <ul class="list-disc pl-5 space-y-2 text-white/80 mb-4">
+                                <li>Онлайн через портал «Госуслуги» (самый удобный способ).</li>
                                 <li>Лично в приемную комиссию колледжа.</li>
-                                <li>Почтой России.</li>
+                                <li>Почтой России (заказным письмом с описью).</li>
                             </ul>
                             <div class="p-3 bg-neon-purple/10 border border-neon-purple/20 rounded-xl">
                                 <span class="font-bold text-neon-purple flex items-center gap-2 mb-1">
@@ -368,19 +392,27 @@
                         </span>
                         <i data-lucide="chevron-down" class="accordion-icon w-5 h-5 text-gray-400 transition-transform duration-300"></i>
                     </button>
-                    <div class="accordion-content px-6 text-gray-400 text-sm md:text-base leading-relaxed">
+                    <div class="accordion-content px-6 text-gray-300 text-sm md:text-base leading-relaxed">
                         <div class="pt-2 border-t border-white/5">
                             <p class="mb-3">Эти документы понадобятся абсолютно всем абитуриентам. Подготовь их заранее и сделай несколько копий:</p>
-                            <ul class="list-disc pl-5 space-y-3 text-white/70">
+                            <ul class="list-disc pl-5 space-y-3 text-white/80">
                                 <li>Паспорт (разворот с фото и прописка).</li>
                                 <li>Аттестат за 9 класс (с приложением, где стоят оценки).</li>
                                 <li>СНИЛС.</li>
                                 <li class="leading-relaxed">
-                                    Медицинская справка по форме 086/у (из поликлиники), а также сертификат (или копия карты) профилактических прививок. Если ты недавно проходил обязательную диспансеризацию — приложи подтверждающие документы.
-                                    <div class="mt-3 p-3 bg-neon-cyan/10 border border-neon-cyan/30 rounded-xl">
+                                    <span class="text-red-400 font-bold">Медицинская справка по форме 086/у</span> (из поликлиники), а также сертификат (или копия карты) профилактических прививок. Если ты недавно проходил обязательную диспансеризацию — приложи подтверждающие документы.
+                                    <div class="mt-3 p-3 bg-neon-cyan/10 border border-neon-cyan/30 rounded-xl text-gray-200">
                                         <span class="font-bold text-neon-cyan block mb-1">Важно:</span>
                                         Если у тебя есть инвалидность, обязательно прикрепи справку МСЭ и ИПРА (индивидуальную программу реабилитации), чтобы колледж с первых дней создал для тебя нужные условия.
                                     </div>
+                                </li>
+                                <li class="leading-relaxed">
+                                    <strong>Дополнительный пакет для иностранных граждан:</strong> Если у тебя нет гражданства РФ, пугаться не стоит, но бумаг потребуется чуть больше. Подготовь:
+                                    <ul class="list-[circle] pl-5 mt-2 space-y-1 text-gray-300">
+                                        <li>Паспорт иностранного гражданина (обязательно с нотариально заверенным переводом на русский язык).</li>
+                                        <li>Копию миграционной карты и документа, подтверждающего законность пребывания в РФ (РВП, ВНЖ, регистрация).</li>
+                                        <li>Аттестат иностранного государства (также с нотариально заверенным переводом).</li>
+                                    </ul>
                                 </li>
                                 <li>4-6 матовых фотографий размером 3х4 см.</li>
                             </ul>
@@ -397,13 +429,14 @@
                         </span>
                         <i data-lucide="chevron-down" class="accordion-icon w-5 h-5 text-gray-400 transition-transform duration-300"></i>
                     </button>
-                    <div class="accordion-content px-6 text-gray-400 text-sm md:text-base leading-relaxed">
+                    <div class="accordion-content px-6 text-gray-300 text-sm md:text-base leading-relaxed">
                         <div class="pt-2 border-t border-white/5">
                             <p class="mb-3">Чтобы колледж предоставил тебе приоритетное право на зачисление, бесплатное питание и стипендии, нужно официально подтвердить твой статус. Обязательно приложи к заявлению:</p>
-                            <ul class="list-disc pl-5 space-y-2 text-white/70">
+                            <ul class="list-disc pl-5 space-y-2 text-white/80">
                                 <li>Справку из органов социальной защиты, подтверждающую статус ребенка-сироты или лица, оставшегося без попечения родителей.</li>
                                 <li>Документы, подтверждающие отсутствие родителей (копии свидетельств о смерти, решения суда о лишении родительских прав и т.д.).</li>
                                 <li>Копию постановления об установлении опеки (если ты находишься под опекой).</li>
+                                <li>Справку о признании семьи малоимущей (для студентов из ТЖС) — берется в МФЦ или соцзащите для оформления социальной стипендии и бесплатного питания.</li>
                             </ul>
                         </div>
                     </div>
@@ -418,7 +451,7 @@
                         </span>
                         <i data-lucide="chevron-down" class="accordion-icon w-5 h-5 text-gray-400 transition-transform duration-300"></i>
                     </button>
-                    <div class="accordion-content px-6 text-gray-400 text-sm md:text-base leading-relaxed">
+                    <div class="accordion-content px-6 text-gray-300 text-sm md:text-base leading-relaxed">
                         <div class="pt-2 border-t border-white/5">
                             <p class="mb-3">После 15 августа колледжи публикуют рейтинговые списки. Находи себя в них и оценивай шансы.</p>
                             <p class="p-4 bg-neon-cyan/10 border border-neon-cyan/20 rounded-xl text-white">
@@ -432,7 +465,7 @@
             </div>
         </section>
 
-        <!-- НОВЫЙ БЛОК: Словарь первокурсника -->
+        <!-- Словарь первокурсника -->
         <section id="dictionary" class="mb-24 scroll-mt-10 scroll-reveal">
             <div class="flex items-center gap-3 mb-6">
                 <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
@@ -441,13 +474,12 @@
                 <h2 class="font-heading text-2xl md:text-3xl font-bold text-white">Словарь первокурсника</h2>
             </div>
             
-            <p class="text-gray-400 mb-8 leading-relaxed bg-card/50 p-5 rounded-2xl border-l-4 border-blue-500/50">
+            <p class="text-gray-300 mb-8 leading-relaxed bg-card/50 p-5 rounded-2xl border-l-4 border-blue-500/50">
                 Студенческий сленг может напугать в первые дни. Не паникуй! Жми на карточки, чтобы узнать перевод со студенческого языка на человеческий.
             </p>
 
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 
-                <!-- Карточка слова 1 -->
                 <div class="flip-card scroll-reveal" onclick="this.classList.toggle('flipped')">
                     <div class="flip-card-inner">
                         <div class="flip-card-front text-xl font-heading font-bold text-white">СЕССИЯ</div>
@@ -457,7 +489,6 @@
                     </div>
                 </div>
 
-                <!-- Карточка слова 2 -->
                 <div class="flip-card scroll-reveal" onclick="this.classList.toggle('flipped')" style="transition-delay: 100ms;">
                     <div class="flip-card-inner">
                         <div class="flip-card-front text-xl font-heading font-bold text-white">ПАРА</div>
@@ -467,7 +498,6 @@
                     </div>
                 </div>
 
-                <!-- Карточка слова 3 -->
                 <div class="flip-card scroll-reveal" onclick="this.classList.toggle('flipped')" style="transition-delay: 200ms;">
                     <div class="flip-card-inner">
                         <div class="flip-card-front text-xl font-heading font-bold text-white">КУРАТОР</div>
@@ -477,7 +507,6 @@
                     </div>
                 </div>
 
-                <!-- Карточка слова 4 -->
                 <div class="flip-card scroll-reveal" onclick="this.classList.toggle('flipped')" style="transition-delay: 300ms;">
                     <div class="flip-card-inner">
                         <div class="flip-card-front text-xl font-heading font-bold text-white">ДОПСА</div>
@@ -487,7 +516,6 @@
                     </div>
                 </div>
 
-                <!-- Карточка слова 5 -->
                 <div class="flip-card scroll-reveal" onclick="this.classList.toggle('flipped')" style="transition-delay: 400ms;">
                     <div class="flip-card-inner">
                         <div class="flip-card-front text-xl font-heading font-bold text-white">АВТОМАТ</div>
@@ -497,7 +525,6 @@
                     </div>
                 </div>
 
-                <!-- Карточка слова 6 -->
                 <div class="flip-card scroll-reveal" onclick="this.classList.toggle('flipped')" style="transition-delay: 500ms;">
                     <div class="flip-card-inner">
                         <div class="flip-card-front text-xl font-heading font-bold text-white">СТУДАК</div>
@@ -516,21 +543,21 @@
                 <div class="w-10 h-10 rounded-full bg-neon-cyan/20 flex items-center justify-center text-neon-cyan">
                     <i data-lucide="message-circle" class="w-5 h-5"></i>
                 </div>
-                <h2 class="font-heading text-2xl md:text-3xl font-bold text-white">Вопросы, которые стыдно задать</h2>
+                <h2 class="font-heading text-2xl md:text-3xl font-bold text-white">Вопросы, которые стыдно задать взрослым</h2>
             </div>
 
-            <p class="text-gray-400 mb-8 leading-relaxed bg-card/50 p-5 rounded-2xl border-l-4 border-neon-cyan">
+            <p class="text-gray-300 mb-8 leading-relaxed bg-card/50 p-5 rounded-2xl border-l-4 border-neon-cyan">
                 Переход из школы в колледж — это шаг в самостоятельную жизнь. Совершенно нормально, что у тебя есть сомнения или страхи, о которых неловко спросить учителей, опекунов или воспитателей. Мы собрали самые частые вопросы ребят и честно на них ответили.
             </p>
 
             <div class="space-y-3">
-                <!-- Аккордеон Вопрос 1 -->
+                <!-- Вопрос 1 -->
                 <div class="accordion-item bg-card border border-white/10 rounded-2xl overflow-hidden scroll-reveal">
                     <button class="accordion-btn w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none">
-                        <span class="font-bold text-white text-base md:text-lg pr-4">А если я завалю первую сессию? Меня отчислят?</span>
+                        <span class="font-bold text-white text-base md:text-lg pr-4">А если я завалю первую сессию (экзамены)? Меня сразу отчислят?</span>
                         <i data-lucide="chevron-down" class="accordion-icon w-5 h-5 text-neon-cyan shrink-0 transition-transform duration-300"></i>
                     </button>
-                    <div class="accordion-content px-6 text-gray-400 text-sm md:text-base leading-relaxed">
+                    <div class="accordion-content px-6 text-gray-300 text-sm md:text-base leading-relaxed">
                         <div class="pt-2 border-t border-white/5">
                             <p class="mb-2">Нет, за одну двойку никто сразу не выгонит. В колледже существует понятие «допсессия» или пересдача. Если ты не сдал предмет, тебе дадут официальное время, чтобы подготовиться и попробовать еще раз.</p>
                             <p class="text-white/80">Главная ошибка — испугаться и перестать ходить на пары. Главное правило — подойти к преподавателю или своему куратору, объяснить ситуацию и узнать сроки пересдач.</p>
@@ -538,15 +565,15 @@
                     </div>
                 </div>
 
-                <!-- Аккордеон Вопрос 2 -->
+                <!-- Вопрос 2 -->
                 <div class="accordion-item bg-card border border-white/10 rounded-2xl overflow-hidden scroll-reveal">
                     <button class="accordion-btn w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none">
-                        <span class="font-bold text-white text-base md:text-lg pr-4">Что делать, если профессия вообще «не мое»?</span>
+                        <span class="font-bold text-white text-base md:text-lg pr-4">Что делать, если я проучусь пару месяцев и пойму, что эта профессия вообще «не мое»?</span>
                         <i data-lucide="chevron-down" class="accordion-icon w-5 h-5 text-neon-cyan shrink-0 transition-transform duration-300"></i>
                     </button>
-                    <div class="accordion-content px-6 text-gray-400 text-sm md:text-base leading-relaxed">
+                    <div class="accordion-content px-6 text-gray-300 text-sm md:text-base leading-relaxed">
                         <div class="pt-2 border-t border-white/5">
-                            <p class="mb-3">Менять решение нормально, но внимание: для студента на полном государственном обеспечении процесс перевода имеет свои сложности. Перевестись в другой колледж или на другую специальность можно только если там есть свободные бюджетные места.</p>
+                            <p class="mb-3"><span class="text-red-400 font-bold">Менять решение нормально</span>, но <strong>внимание</strong>: для студента, <strong>получающего социальные льготы (стипендию или полное гособеспечение)</strong>, процесс перевода имеет свои сложности. Перевестись в другой колледж или на другую специальность можно <em>только</em> если там есть свободные бюджетные места.</p>
                             <p class="mb-4 text-white/80">Кроме того, смена колледжа означает переоформление документов на все выплаты и перевод в другое общежитие — это бюрократический процесс, во время которого выплаты могут временно приостановиться.</p>
                             <div class="p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl text-white/90">
                                 <p>Если ты твердо решил сменить профессию, <strong class="text-orange-400">не отчисляйся «в никуда»!</strong> Первым делом иди к социальному педагогу своего колледжа — он поможет выстроить безопасный маршрут перевода без потери твоих законных льгот.</p>
@@ -555,13 +582,13 @@
                     </div>
                 </div>
 
-                <!-- Аккордеон Вопрос 3 -->
+                <!-- Вопрос 3 -->
                 <div class="accordion-item bg-card border border-white/10 rounded-2xl overflow-hidden scroll-reveal">
                     <button class="accordion-btn w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none">
-                        <span class="font-bold text-white text-base md:text-lg pr-4">Боюсь жить в общаге. А если соседи неадекватные?</span>
+                        <span class="font-bold text-white text-base md:text-lg pr-4">Я боюсь жить в общаге. Что делать, если попадутся неадекватные соседи?</span>
                         <i data-lucide="chevron-down" class="accordion-icon w-5 h-5 text-neon-cyan shrink-0 transition-transform duration-300"></i>
                     </button>
-                    <div class="accordion-content px-6 text-gray-400 text-sm md:text-base leading-relaxed">
+                    <div class="accordion-content px-6 text-gray-300 text-sm md:text-base leading-relaxed">
                         <div class="pt-2 border-t border-white/5">
                             <p class="mb-2">Жизнь в общежитии — это опыт компромиссов, но терпеть издевательства, воровство или сильный дискомфорт ты не должен. В каждом студенческом общежитии есть комендант, воспитатель и правила проживания.</p>
                             <p class="text-white/80">Если договориться с соседями по комнате не получается, ты имеешь полное право написать заявление с просьбой переселить тебя. Твоя безопасность и спокойствие — это самое важное.</p>
@@ -569,20 +596,49 @@
                     </div>
                 </div>
 
-                <!-- Аккордеон Вопрос 4 -->
+                <!-- Вопрос 4 -->
                 <div class="accordion-item bg-card border border-white/10 rounded-2xl overflow-hidden scroll-reveal">
                     <button class="accordion-btn w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none">
-                        <span class="font-bold text-white text-base md:text-lg pr-4">Если я не приду на пары, позвонят в соцзащиту?</span>
+                        <span class="font-bold text-white text-base md:text-lg pr-4">Если я просто не приду на пары, будут ли звонить законным представителям или в соцзащиту?</span>
                         <i data-lucide="chevron-down" class="accordion-icon w-5 h-5 text-neon-cyan shrink-0 transition-transform duration-300"></i>
                     </button>
-                    <div class="accordion-content px-6 text-gray-400 text-sm md:text-base leading-relaxed">
+                    <div class="accordion-content px-6 text-gray-300 text-sm md:text-base leading-relaxed">
                         <div class="pt-2 border-t border-white/5">
                             <p class="mb-2">В колледже к студентам относятся как к взрослым, но контроль посещаемости остается. За каждой группой закреплен куратор. Если ты пропустил день-два, скорее всего, спросят только с тебя.</p>
-                            <p class="mb-2">Но если пропусков много и они без уважительной причины, колледж обязан сообщить об этом твоим законным представителям (опекуну или в интернат).</p>
+                            <p class="mb-2">Но если пропусков много и они без уважительной причины, колледж обязан сообщить об этом твоим законным представителям (родителям, опекуну или в интернат).</p>
                             <p class="text-white/80">Если тебе действительно нужно пропустить учебу (например, нужно в поликлинику или оформить документы), просто предупреди куратора заранее — к этому отнесутся с пониманием.</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- Вопрос 5 -->
+                <div class="accordion-item bg-card border border-white/10 rounded-2xl overflow-hidden scroll-reveal">
+                    <button class="accordion-btn w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none">
+                        <span class="font-bold text-white text-base md:text-lg pr-4">Дома постоянно нет денег, родители говорят, чтобы я шел работать грузчиком/курьером, а не учился. Как быть?</span>
+                        <i data-lucide="chevron-down" class="accordion-icon w-5 h-5 text-neon-cyan shrink-0 transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content px-6 text-gray-300 text-sm md:text-base leading-relaxed">
+                        <div class="pt-2 border-t border-white/5">
+                            <p class="mb-2">Выбор правда сложный. Курьером или грузчиком ты заработаешь быстрые деньги прямо сейчас, но это тяжелый физический труд, на котором здоровье расходуется очень быстро. Колледж — это твоя страховка.</p>
+                            <p class="text-white/80">Поступай на бюджет, оформляй социальную стипендию и ищи подработку на выходные или вечер. После выпуска у тебя будет профессия, где можно работать головой или квалифицированными руками. Так ты сможешь и приносить деньги, и не потеряешь будущее.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вопрос 6 -->
+                <div class="accordion-item bg-card border border-white/10 rounded-2xl overflow-hidden scroll-reveal">
+                    <button class="accordion-btn w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none">
+                        <span class="font-bold text-white text-base md:text-lg pr-4">Я плохо говорю по-русски и у меня другой менталитет. Боюсь, что в колледже надо мной будут смеяться.</span>
+                        <i data-lucide="chevron-down" class="accordion-icon w-5 h-5 text-neon-cyan shrink-0 transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content px-6 text-gray-300 text-sm md:text-base leading-relaxed">
+                        <div class="pt-2 border-t border-white/5">
+                            <p class="mb-2">Твой страх понятен, жестокие люди встречаются везде. Но колледж — это уже не школа, здесь больше ценят адекватность и то, что ты умеешь делать руками на практике.</p>
+                            <p class="text-white/80">Если тебе тяжело с языком или кто-то пытается тебя задевать — не терпи и не пытайся вывезти всё в одиночку. Иди к куратору. Во многих колледжах можно найти старшекурсника-наставника, который поможет влиться в тусовку и подтянуть понимание предметов.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -592,48 +648,55 @@
                 <div class="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-400">
                     <i data-lucide="star" class="w-5 h-5"></i>
                 </div>
-                <h2 class="font-heading text-2xl md:text-3xl font-bold text-white">Сам себе хозяин: Лайфхаки</h2>
+                <h2 class="font-heading text-2xl md:text-3xl font-bold text-white">Сам себе хозяин: Лайфхаки для самостоятельной жизни</h2>
             </div>
 
-            <p class="text-gray-400 mb-8 leading-relaxed bg-card/50 p-5 rounded-2xl border-l-4 border-yellow-500/50">
-                Жить самостоятельно и распоряжаться своими деньгами — это круто! У тебя появляется долгожданная свобода. Но чтобы эта независимость приносила радость, а не стресс из-за пустого кошелька за неделю до стипендии, стоит знать несколько базовых правил.
+            <p class="text-gray-300 mb-8 leading-relaxed bg-card/50 p-5 rounded-2xl border-l-4 border-yellow-500/50">
+                Жить самостоятельно и распоряжаться своими деньгами — это круто! У тебя появляется долгожданная свобода. Но чтобы эта независимость приносила радость, а не стресс из-за пустого кошелька за неделю до стипендии, стоит знать несколько базовых правил. Мы собрали проверенные советы от студентов старших курсов.
             </p>
 
-            <!-- Горизонтальный скролл на мобилках (Слайдер), сетка на десктопе -->
-            <div class="flex overflow-x-auto md:grid md:grid-cols-2 gap-5 pb-6 snap-x snap-mandatory hide-scrollbar">
+            <div id="lifehacks-slider" class="flex overflow-x-auto md:grid md:grid-cols-2 gap-5 pb-4 snap-x snap-mandatory hide-scrollbar">
                 
-                <div class="min-w-[85%] md:min-w-0 snap-center bg-card border border-white/10 rounded-2xl p-6 flex flex-col scroll-reveal">
+                <div class="min-w-[75%] sm:min-w-[60%] md:min-w-0 snap-center bg-card border border-white/10 rounded-2xl p-6 flex flex-col scroll-reveal">
                     <div class="text-yellow-400 mb-4 bg-yellow-400/10 w-12 h-12 flex items-center justify-center rounded-xl">
                         <i data-lucide="wallet" class="w-6 h-6"></i>
                     </div>
                     <h3 class="font-bold text-white mb-2 text-lg">Правило «Сначала базовое»</h3>
-                    <p class="text-sm text-gray-400">Как только пришла стипендия, остановись. Сначала оплати мобильную связь, пополни проездной и отложи сумму на базовые продукты. Только после того, как «тылы прикрыты», планируй развлечения и покупки.</p>
+                    <p class="text-sm text-gray-300 leading-relaxed">Как только тебе пришла стипендия или социальная выплата, возникает соблазн сразу купить то, о чем давно мечтал. Остановись на минуту. Сначала оплати мобильную связь, пополни проездной и отложи сумму на базовые продукты питания. Только после того, как «тылы прикрыты», планируй развлечения и приятные покупки.</p>
                 </div>
 
-                <div class="min-w-[85%] md:min-w-0 snap-center bg-card border border-white/10 rounded-2xl p-6 flex flex-col scroll-reveal" style="transition-delay: 100ms;">
+                <div class="min-w-[75%] sm:min-w-[60%] md:min-w-0 snap-center bg-card border border-white/10 rounded-2xl p-6 flex flex-col scroll-reveal" style="transition-delay: 100ms;">
                     <div class="text-neon-cyan mb-4 bg-neon-cyan/10 w-12 h-12 flex items-center justify-center rounded-xl">
                         <i data-lucide="ticket" class="w-6 h-6"></i>
                     </div>
-                    <h3 class="font-bold text-white mb-2 text-lg">Студенческий — твоя суперсила</h3>
-                    <p class="text-sm text-gray-400">Во многих кинотеатрах, музеях, кафе, тренажерках и магазинах есть скидки по студенческому. Возьми за привычку носить его с собой и не стесняйся спрашивать: «А у вас есть скидка для студентов?».</p>
+                    <h3 class="font-bold text-white mb-2 text-lg">Студенческий билет — твоя суперсила</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">Твой статус студента дает кучу неочевидных бонусов. Во многих кинотеатрах, музеях, кафе, тренажерных залах и магазинах есть специальные скидки по студенческому билету. Возьми за привычку всегда носить его с собой и не стесняйся спрашивать на кассах: «А у вас есть скидка для студентов?». Это отлично экономит бюджет.</p>
                 </div>
 
-                <div class="min-w-[85%] md:min-w-0 snap-center bg-card border border-white/10 rounded-2xl p-6 flex flex-col scroll-reveal" style="transition-delay: 200ms;">
+                <div class="min-w-[75%] sm:min-w-[60%] md:min-w-0 snap-center bg-card border border-white/10 rounded-2xl p-6 flex flex-col scroll-reveal" style="transition-delay: 200ms;">
                     <div class="text-green-400 mb-4 bg-green-400/10 w-12 h-12 flex items-center justify-center rounded-xl">
                         <i data-lucide="utensils" class="w-6 h-6"></i>
                     </div>
-                    <h3 class="font-bold text-white mb-2 text-lg">Готовить самому — это выгодно</h3>
-                    <p class="text-sm text-gray-400">Фастфуд — это быстро, но дорого. Научись готовить 3–4 самых простых блюда (макароны, яичницу, гречку, простой суп). Это сбережет огромную часть твоих денег на хобби или одежду.</p>
+                    <h3 class="font-bold text-white mb-2 text-lg">Готовить самому — это выгодно (и вкусно)</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">Питаться готовой едой из кулинарии или фастфудом — это быстро, но очень дорого. Научись готовить 3–4 самых простых и сытных блюда (макароны по-флотски, яичницу, гречку, простой суп). Это сбережет огромную часть твоих денег, которые ты сможешь потратить на хобби, новую одежду или технику.</p>
                 </div>
 
-                <div class="min-w-[85%] md:min-w-0 snap-center bg-card border border-white/10 rounded-2xl p-6 flex flex-col scroll-reveal" style="transition-delay: 300ms;">
+                <div class="min-w-[75%] sm:min-w-[60%] md:min-w-0 snap-center bg-card border border-white/10 rounded-2xl p-6 flex flex-col scroll-reveal" style="transition-delay: 300ms;">
                     <div class="text-neon-purple mb-4 bg-neon-purple/10 w-12 h-12 flex items-center justify-center rounded-xl">
                         <i data-lucide="sparkles" class="w-6 h-6"></i>
                     </div>
                     <h3 class="font-bold text-white mb-2 text-lg">Правило 15 минут для уюта</h3>
-                    <p class="text-sm text-gray-400">В общаге не будет родителей. Заведи привычку тратить всего 15 минут вечером на то, чтобы убрать вещи и протереть стол. Это поможет избежать конфликтов с соседями и создаст комфортное место для отдыха.</p>
+                    <p class="text-sm text-gray-300 leading-relaxed">В общежитии не будет воспитателей или родителей, которые заставят наводить порядок. Но жить в чистоте банально приятнее. Заведи привычку тратить всего 15 минут вечером на то, чтобы убрать вещи по местам и протереть стол. Это поможет избежать лишних конфликтов с соседями по комнате и создаст место, где тебе самому будет комфортно отдыхать после пар.</p>
                 </div>
 
+            </div>
+            
+            <!-- Индикаторы слайдера (только для мобильных) -->
+            <div class="flex justify-center gap-2 mt-2 md:hidden" id="slider-dots">
+                <div class="slider-dot w-2 h-2 rounded-full bg-yellow-400"></div>
+                <div class="slider-dot w-2 h-2 rounded-full bg-white/20"></div>
+                <div class="slider-dot w-2 h-2 rounded-full bg-white/20"></div>
+                <div class="slider-dot w-2 h-2 rounded-full bg-white/20"></div>
             </div>
         </section>
 
@@ -643,11 +706,11 @@
                 <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center text-red-500">
                     <i data-lucide="alert-triangle" class="w-5 h-5"></i>
                 </div>
-                <h2 class="font-heading text-2xl md:text-3xl font-bold text-white">Тревожная кнопка</h2>
+                <h2 class="font-heading text-2xl md:text-3xl font-bold text-white">Тревожная кнопка: куда обращаться, если запутался</h2>
             </div>
 
-            <p class="text-gray-400 mb-8 leading-relaxed bg-card/50 p-5 rounded-2xl border-l-4 border-red-500/50">
-                Самостоятельная жизнь — это круто, но иногда случаются ситуации, с которыми трудно справиться в одиночку. Просить о помощи — это не признак слабости, а самое взрослое и адекватное решение. Куда обращаться, если запутался:
+            <p class="text-gray-300 mb-8 leading-relaxed bg-card/50 p-5 rounded-2xl border-l-4 border-red-500/50">
+                Самостоятельная жизнь — это круто, но иногда случаются ситуации, с которыми трудно справиться в одиночку. Накатила сильная тревога, нарушаются твои права, произошел конфликт, из которого ты не видишь выхода — всё это бывает. Просить о помощи в такие моменты — это не признак слабости, а самое взрослое и адекватное решение. Тебе не обязательно справляться со всем одному.
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -657,9 +720,9 @@
                         <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                             <i data-lucide="user-check" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="font-bold text-white text-lg">Социальный педагог</h3>
+                        <h3 class="font-bold text-white text-lg">Социальный педагог колледжа</h3>
                     </div>
-                    <p class="text-sm text-gray-400">Твой первый союзник в колледже. Он защищает твои права, помогает с документами, льготами, общежитием и стипендиями. Это безопасно!</p>
+                    <p class="text-sm text-gray-300 leading-relaxed">Твой первый союзник. Это человек, чья прямая обязанность — защищать твои права и помогать с документами, льготами, общежитием и стипендиями. Если тебе задерживают выплаты — в первую очередь иди к нему.</p>
                 </a>
 
                 <a href="https://www.твоятерритория.онлайн/" target="_blank" class="group block bg-card hover:bg-white/5 border border-white/10 hover:border-purple-400/50 rounded-2xl p-5 transition-all duration-300 scroll-reveal" style="transition-delay: 100ms;">
@@ -667,9 +730,9 @@
                         <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
                             <i data-lucide="message-square" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="font-bold text-white text-lg">Анонимный чат</h3>
+                        <h3 class="font-bold text-white text-lg">Анонимная психологическая помощь</h3>
                     </div>
-                    <p class="text-sm text-gray-400">Не любишь звонить? Напиши в чат «Твоя территория». Анонимно, бесплатно. Крутые психологи просто выслушают и помогут успокоиться.</p>
+                    <p class="text-sm text-gray-300 leading-relaxed">Не любишь звонить по телефону? Есть линия «Твоя территория». Напиши в чат. Это полностью анонимно, бесплатно, и там работают крутые психологи, которые просто выслушают и помогут успокоиться.</p>
                 </a>
 
                 <a href="tel:88002000122" class="group block bg-card hover:bg-white/5 border border-white/10 hover:border-red-400/50 rounded-2xl p-5 transition-all duration-300 scroll-reveal" style="transition-delay: 200ms;">
@@ -680,7 +743,27 @@
                         <h3 class="font-bold text-white text-lg">Телефон доверия</h3>
                     </div>
                     <p class="text-sm text-red-400 font-bold mb-1">8-800-2000-122</p>
-                    <p class="text-sm text-gray-400">Бесплатный и анонимный номер (круглосуточно). Звонок не отображается в детализации счета. Звони с любой проблемой.</p>
+                    <p class="text-sm text-gray-300 leading-relaxed">Бесплатный и анонимный номер (круглосуточно). Ты можешь позвонить туда с любой проблемой. Звонок не отображается в детализации счета, и никто не узнает, что ты звонил.</p>
+                </a>
+
+                <a href="#" class="group block bg-card hover:bg-white/5 border border-white/10 hover:border-orange-400/50 rounded-2xl p-5 transition-all duration-300 scroll-reveal" style="transition-delay: 300ms;">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform">
+                            <i data-lucide="heart-handshake" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-lg">Центры помощи (ЦСПСиД)</h3>
+                    </div>
+                    <p class="text-sm text-gray-300 leading-relaxed">Если дома находиться небезопасно, родители пьют или тебе нечего есть — не жди беды. Там работают психологи и юристы, которые могут помочь с ситуацией в семье и нужными справками.</p>
+                </a>
+
+                <a href="#" class="group block bg-card hover:bg-white/5 border border-white/10 hover:border-emerald-400/50 rounded-2xl p-5 transition-all duration-300 scroll-reveal md:col-span-2 lg:col-span-1" style="transition-delay: 400ms;">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                            <i data-lucide="scale" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-lg">Правовая помощь иностранцам</h3>
+                    </div>
+                    <p class="text-sm text-gray-300 leading-relaxed">Если возникли сложности с документами, миграционным учетом или тебя отказываются принимать в колледж из-за гражданства — обращайся к Уполномоченному по правам ребенка (легально и бесплатно).</p>
                 </a>
 
             </div>
@@ -760,6 +843,30 @@
                 }
             });
         });
+
+        // 5. Логика для индикаторов мобильного слайдера лайфхаков
+        const slider = document.getElementById('lifehacks-slider');
+        const dots = document.querySelectorAll('.slider-dot');
+        
+        if (slider && dots.length > 0) {
+            slider.addEventListener('scroll', () => {
+                // Вычисляем индекс активной карточки
+                const scrollLeft = slider.scrollLeft;
+                const cardWidth = slider.offsetWidth * 0.75; // Ширина карточки примерно 75%
+                const activeIndex = Math.round(scrollLeft / cardWidth);
+                
+                // Обновляем цвета точек
+                dots.forEach((dot, index) => {
+                    if (index === activeIndex) {
+                        dot.classList.remove('bg-white/20');
+                        dot.classList.add('bg-yellow-400');
+                    } else {
+                        dot.classList.remove('bg-yellow-400');
+                        dot.classList.add('bg-white/20');
+                    }
+                });
+            });
+        }
     </script>
 </body>
 </html>
